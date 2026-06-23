@@ -138,8 +138,9 @@ class TestInvoiceBatchProcess:
         """测试批量处理空目录"""
         recognizer = InvoiceRecognizer(config.get('invoice', {}))
         result = recognizer.batch_process('/nonexistent/directory')
-        assert result.success
-        assert isinstance(result.data, list)
+        # 目录不存在时应该返回失败
+        assert not result.success
+        assert len(result.errors) > 0
 
     def test_batch_process_directory_validation(self, config):
         """测试目录验证"""

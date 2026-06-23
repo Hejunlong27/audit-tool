@@ -16,6 +16,33 @@ from core.base import BaseProcessor, ProcessResult
 class DataAnalyzer(BaseProcessor):
     """数据分析引擎"""
 
+    def process(self, data: Any = None, **kwargs) -> ProcessResult:
+        """
+        通用处理入口
+
+        Args:
+            data: 输入数据（DataFrame 或文件路径）
+            **kwargs: 其他参数
+
+        Returns:
+            ProcessResult
+        """
+        result = ProcessResult()
+
+        # 根据数据类型自动选择分析方法
+        if isinstance(data, pd.DataFrame):
+            # 如果是 DataFrame，尝试进行银行流水分析
+            return self.analyze_bank_statement(data, **kwargs)
+        elif isinstance(data, str) and os.path.isfile(data):
+            # 如果是文件路径，加载后分析
+            ext = os.path.splitext(data)[1].lower()
+            if ext in ('.xlsx', '.xls', '.csv'):
+                df = pd.read_excel(data) if ext in ('.xlsx', '.xls') else pd.read_csv(data)
+                return self.analyze_bank_statement(df, **kwargs)
+
+        result.add_warning("DataAnalyzer.process() 建议直接调用具体方法")
+        return result
+
     def analyze_bank_statement(
         self,
         df: pd.DataFrame,
@@ -98,7 +125,7 @@ class DataAnalyzer(BaseProcessor):
                 window_hours = config.get('split_transaction_window', 24)
                 split_threshold = config.get('split_transaction_threshold', 500000)
                 df_sorted = df.sort_values(date_col)
-                df_sorted['time_group'] = df_sorted[date_col].dt.floor(f'{window_hours}H')
+                df_sorted['time_group'] = df_sorted[date_col].dt.floor(f'{window_hours}h')
 
                 grouped = df_sorted.groupby([counterparty_col, 'time_group'])[amount_col].agg(['sum', 'count'])
                 split_suspects = grouped[(grouped['sum'].abs() >= split_threshold) & (grouped['count'] > 1)]
@@ -140,8 +167,9 @@ class DataAnalyzer(BaseProcessor):
             if len(values) < min_sample:
                 result.add_warning(f"样本量不足 ({len(values)} < {min_sample})，结果可能不可靠")
 
-            # 提取首位数字
-            first_digits = values.astype(str).str[0].astype(int)
+            # 提取首位数字（过滤0和非数字）
+            first_digits = values.astype(str).str[0]
+            first_digits = first_digits[first_digits.str.match(r'^[1-9]$')].astype(int)
             observed = first_digits.value_counts().sort_index()
 
             # 确保包含 1-9
@@ -156,10 +184,14 @@ class DataAnalyzer(BaseProcessor):
                 5: 0.079, 6: 0.067, 7: 0.058, 8: 0.051, 9: 0.046
             })
 
-            expected_counts = theoretical * len(values)
+            # 使用观测值的实际总数来计算期望频数
+            total_observed = len(first_digits)
+            expected_counts = theoretical * total_observed
 
-            # 卡方检验
-            chi2, p_value = stats.chisquare(observed.values, f_exp=expected_counts.values)
+            # 卡方检验（归一化以确保总和相等）
+            observed_normalized = observed.values / observed.values.sum()
+            expected_normalized = expected_counts.values / expected_counts.values.sum()
+            chi2, p_value = stats.chisquare(observed_normalized, f_exp=expected_normalized)
 
             is_anomaly = p_value < alpha
 

@@ -125,6 +125,10 @@ class InvoiceRecognizer(BaseProcessor):
         result = ProcessResult()
         results = []
 
+        if not os.path.isdir(image_dir):
+            result.add_error(f"目录不存在: {image_dir}")
+            return result
+
         image_extensions = ('.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.pdf')
         files = [f for f in os.listdir(image_dir)
                  if f.lower().endswith(image_extensions)]
