@@ -1,0 +1,73 @@
+# 发票识别模板配置
+templates:
+ 增值税专用发票:
+    field_patterns:
+      invoice_code:
+        regex: "发票代码[：:]\\s*(\\d{10,12})"
+        group: 1
+      invoice_number:
+        regex: "发票号码[：:]\\s*(\\d{8})"
+        group: 1
+      invoice_date:
+        regex: "(\\d{4})\\s*年\\s*(\\d{1,2})\\s*月\\s*(\\d{1,2})\\s*日"
+        group: "all"
+        format: "{1}-{2:0>2}-{3:0>2}"
+      amount:
+        regex: "(?:合计|金额)[：:]\\s*[¥￥]?([\\d,]+\\.?\\d*)"
+        group: 1
+      tax:
+        regex: "税额[：:]\\s*[¥￥]?([\\d,]+\\.?\\d*)"
+        group: 1
+      total:
+        regex: "价税合计[：:]\\s*[¥￥]?([\\d,]+\\.?\\d*)"
+        group: 1
+      seller:
+        regex: "销方[名称：:]\\s*(.+)"
+        group: 1
+      buyer:
+        regex: "购方[名称：:]\\s*(.+)"
+        group: 1
+
+ 增值税普通发票:
+    field_patterns:
+      invoice_code:
+        regex: "发票代码[：:]\\s*(\\d{10,12})"
+        group: 1
+      invoice_number:
+        regex: "发票号码[：:]\\s*(\\d{8})"
+        group: 1
+      invoice_date:
+        regex: "(\\d{4})\\s*年\\s*(\\d{1,2})\\s*月\\s*(\\d{1,2})\\s*日"
+        group: "all"
+        format: "{1}-{2:0>2}-{3:0>2}"
+      amount:
+        regex: "[¥￥]\\s*([\\d,]+\\.?\\d*)"
+        group: 1
+      seller:
+        regex: "销售方[名称：:]\\s*(.+)"
+        group: 1
+      buyer:
+        regex: "购买方[名称：:]\\s*(.+)"
+        group: 1
+
+ 电子发票:
+    field_patterns:
+      invoice_number:
+        regex: "发票号码[：:]\\s*(\\d{8,20})"
+        group: 1
+      invoice_date:
+        regex: "(\\d{4})[年-](\\d{1,2})[月-](\\d{1,2})[日号]"
+        group: "all"
+        format: "{1}-{2:0>2}-{3:0>2}"
+      amount:
+        regex: "[¥￥]\\s*([\\d,]+\\.?\\d*)"
+        group: 1
+      total:
+        regex: "合\\s*计[：:]\\s*[¥￥]?([\\d,]+\\.?\\d*)"
+        group: 1
+      seller:
+        regex: "销售方名称[：:]\\s*(.+)"
+        group: 1
+      buyer:
+        regex: "购买方名称[：:]\\s*(.+)"
+        group: 1

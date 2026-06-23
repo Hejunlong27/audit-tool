@@ -1,0 +1,125 @@
+# 全局配置文件
+app:
+  name: "审计日常工作协助工具"
+  version: "1.0.0"
+  debug: false
+
+paths:
+  output_dir: "./output"
+  template_dir: "./templates"
+  log_dir: "./logs"
+  db_path: "./data/audit_tool.db"
+
+# PDF 提取配置
+pdf_extract:
+  # 表格检测策略: auto / lines / text / ocr
+  default_strategy: "auto"
+  # 跨页表格拼接: 是否启用
+  cross_page_merge: true
+  # 合并单元格还原: 是否启用
+  merge_cells: true
+  # 数字格式智能识别
+  smart_number_format: true
+  # OCR 降级阈值: 当有线/无线提取结果为空时，是否降级到 OCR
+  ocr_fallback: true
+
+# OCR 配置
+ocr:
+  engine: "paddleocr"  # paddleocr / tesseract
+  lang: "ch"           # ch / en / ch_en
+  use_gpu: false
+  # PaddleOCR 模型选择: mobile(轻量) / server(高精度)
+  model_type: "server"
+
+# 数据分析配置
+analysis:
+  # 银行流水分析
+  bank_statement:
+    # 大额交易阈值（元）
+    large_amount_threshold: 500000
+    # 拆分交易检测时间窗口（小时）
+    split_transaction_window: 24
+    # 拆分交易累计阈值（元）
+    split_transaction_threshold: 500000
+    # 非工作时间定义
+    off_hours:
+      start: "22:00"
+      end: "06:00"
+    # 频繁对手方阈值
+    frequent_counterparty_threshold: 10
+    # 余额异常波动倍数（标准差）
+    balance_anomaly_std_multiple: 3
+
+  # Benford 法则
+  benford:
+    # 显著性水平
+    alpha: 0.05
+    # 最小样本量
+    min_sample_size: 30
+
+  # 对账配置
+  reconciliation:
+    # 日期容差（天）
+    date_tolerance: 3
+    # 金额容差（元）
+    amount_tolerance: 1.0
+
+# 发票识别配置
+invoice:
+  # 支持的发票类型
+  supported_types:
+    - "增值税专用发票"
+    - "增值税普通发票"
+    - "电子发票"
+    - "机动车销售统一发票"
+    - "火车票"
+  # 查重字段
+  dedup_fields:
+    - "invoice_code"
+    - "invoice_number"
+    - "amount"
+
+# 合同审查配置
+contract:
+  # 需要提取的条款类型
+  clause_types:
+    - "合同主体"
+    - "合同金额"
+    - "付款条件"
+    - "违约责任"
+    - "保密条款"
+    - "争议解决方式"
+    - "合同期限"
+    - "不可抗力"
+  # 高风险关键词
+  risk_keywords:
+    - "不可撤销"
+    - "无条件承担"
+    - "无限连带责任"
+    - "单方面解约"
+    - "自动续期"
+  # 到期提醒天数
+  expiry_warning_days: 30
+
+# 底稿管理配置
+working_paper:
+  # 编号规则
+  numbering:
+    prefix_map:
+      "资产类": "A"
+      "负债类": "L"
+      "所有者权益类": "E"
+      "收入类": "I"
+      "费用类": "F"
+      "现金流量类": "C"
+    separator: "-"
+
+# GUI 配置
+gui:
+  title: "审计日常工作协助工具"
+  port: 8080
+  host: "127.0.0.1"
+  reload: false
+  # native mode: 打包为桌面窗口
+  native: false
+  window_size: "1400x900"
