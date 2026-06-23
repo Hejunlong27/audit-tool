@@ -14,6 +14,9 @@ from ui.pages.utils import create_utils_page
 
 
 @ui.page('/')
+def index_page():
+    ui.navigate.to('/convert')
+
 
 @ui.page('/convert')
 def convert_page():
@@ -68,7 +71,7 @@ def main():
 
     ui.run(
         title='审计日常工作协助工具',
-        host='127.0.0.1',
+        host='0.0.0.0',
         port=8080,
         reload=False,
         show=False
