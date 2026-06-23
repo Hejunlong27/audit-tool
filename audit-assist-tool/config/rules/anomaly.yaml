@@ -1,0 +1,34 @@
+# 异常检测规则配置
+rules:
+  - name: "大额交易"
+    type: "threshold"
+    field: "amount"
+    operator: ">"
+    value: 500000
+    severity: "high"
+
+  - name: "整额交易"
+    type: "pattern"
+    field: "amount"
+    pattern: "^\\d+0000$"
+    severity: "medium"
+
+  - name: "非工作时间交易"
+    type: "time_range"
+    field: "date"
+    exclude_ranges:
+      - start: "08:00"
+        end: "18:00"
+      - weekday_only: true
+    severity: "medium"
+
+  - name: "重复交易"
+    type: "duplicate"
+    fields: ["amount", "counterparty", "date"]
+    tolerance_days: 1
+    severity: "high"
+
+  - name: "序列断号"
+    type: "gap_detection"
+    field: "serial_number"
+    severity: "low"

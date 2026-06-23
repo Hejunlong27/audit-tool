@@ -1,0 +1,40 @@
+# === PDF 处理 ===
+pdfplumber>=0.11.0
+PyMuPDF>=1.27.0
+pdf2docx>=0.5.8
+pypdf>=4.0.0
+
+# === OCR ===
+paddleocr>=2.9.0
+paddlepaddle>=2.6.0
+
+# === 数据分析 ===
+pandas>=2.2.0
+numpy>=1.26.0
+scipy>=1.14.0
+networkx>=3.3.0
+
+# === Excel/Word ===
+openpyxl>=3.1.0
+python-docx>=1.1.0
+docxtpl>=0.18.0
+Jinja2>=3.1.0
+
+# === 可视化 ===
+pyecharts>=2.0.0
+
+# === 全文检索 ===
+Whoosh>=2.7.4
+
+# === GUI ===
+nicegui>=3.13.0
+
+# === 工具 ===
+thefuzz[speedup]>=0.22.0
+python-Levenshtein>=0.25.0
+PyYAML>=6.0
+loguru>=0.7.0
+
+# === 测试 ===
+pytest>=7.0.0
+pytest-cov>=4.0.0

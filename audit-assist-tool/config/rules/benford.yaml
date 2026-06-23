@@ -1,0 +1,18 @@
+# Benford 法则参数配置
+# 理论首位数字概率分布
+theoretical_distribution:
+  1: 0.301
+  2: 0.176
+  3: 0.125
+  4: 0.097
+  5: 0.079
+  6: 0.067
+  7: 0.058
+  8: 0.051
+  9: 0.046
+
+# 检验配置
+test:
+  method: "chi_square"  # chi_square / ks_test
+  alpha: 0.05           # 显著性水平
+  min_sample: 30        # 最小样本量
